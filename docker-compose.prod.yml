@@ -1,0 +1,84 @@
+services:
+  nginx:
+    volumes:
+      - app_public:/var/www/html/public
+
+  app:
+    build:
+      context: .
+      target: production
+    image: app:prod
+    env_file:
+      - .env 
+    volumes:
+      - app_public:/var/www/html/public
+    restart: always
+    environment:
+      - APP_DEBUG=true
+      - REDIS_HOST=redis
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+
+  queue: 
+    image: app:prod
+    container_name: ntbook_queue
+    restart: always
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    env_file:
+      - .env 
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+      - ntbook_network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  scheduler: 
+    image: app:prod
+    container_name: ntbook_scheduler
+    restart: always
+    entrypoint: []
+    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction && sleep 60; done"
+    env_file:
+      - .env 
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ntbook_network
+
+  mysql: 
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: ntbook_redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ntbook_network
+
+volumes:
+  app_public:

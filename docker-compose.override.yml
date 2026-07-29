@@ -1,0 +1,31 @@
+services:
+  nginx:
+    volumes:
+      - .:/var/www/html 
+
+  app:
+    build:
+      context: .
+      target: development
+    image: app:dev
+    volumes:
+      - .:/var/www/html 
+    environment:
+      - APP_DEBUG=true
+
+  phpmyadmin:
+    image: phpmyadmin:5.2-apache
+    container_name: ntbook_phpmyadmin 
+    restart: unless-stopped 
+    ports: 
+      - "8081:80"
+    environment: 
+      - PMA_HOST=${PMA_HOST}
+      - PMA_PORT=${PMA_PORT}
+      - PMA_USER=${PMA_USER}
+      - PMA_PASSWORD=${PMA_PASSWORD}
+    depends_on: 
+      mysql:
+        condition: service_healthy 
+    networks:
+      - ntbook_network 

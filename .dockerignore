@@ -1,0 +1,15 @@
+node_modules
+vendor
+.git
+.env
+tests/
+*.md 
+.github/
+.idea/
+.vscode/
+storage/logs/
+storage/framework/cache
+bootstrap/cache
+phpunit.xml 
+Makefile
+*.log
