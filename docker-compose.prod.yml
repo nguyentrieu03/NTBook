@@ -14,7 +14,7 @@ services:
       - app_public:/var/www/html/public
     restart: always
     environment:
-      - APP_DEBUG=true
+      - APP_DEBUG=false
       - REDIS_HOST=redis
     depends_on:
       redis:
