@@ -23,7 +23,7 @@ EXPOSE 9000
 FROM base AS development
 RUN apt-get update && apt-get install -y git curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
-COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/php/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
@@ -33,7 +33,7 @@ FROM base AS production
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY . . 
 COPY --from=composer_builder /app/vendor ./vendor
-COPY docker/entrypoint.prod.sh /entrypoint.prod.sh
+COPY docker/php/entrypoint.prod.sh /entrypoint.prod.sh
 RUN chmod +x /entrypoint.prod.sh \
  && mkdir -p /var/www/html/bootstrap/cache \
  && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
