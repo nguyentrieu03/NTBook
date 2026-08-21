@@ -1,0 +1,70 @@
+/* Categories & attributes — two panels. */
+.cat-grid{align-items:start;display:grid;gap:20px;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}
+@media(max-width:900px){.cat-grid{grid-template-columns:1fr}}
+
+.tree-row .tree-actions{display:none;gap:2px;margin-left:6px;flex-shrink:0}
+.tree-row:hover .tree-actions{display:flex}
+.tree-actions .btn--icon{padding:4px}
+.tree-actions .btn--icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.9}
+
+.tree-drag-handle{align-items:center;color:var(--t-light);cursor:grab;display:grid;flex-shrink:0;height:22px;opacity:.45;place-items:center;transition:opacity .15s,color .15s;width:22px;touch-action:none}
+.tree-row:hover .tree-drag-handle,.tree-node.tree-chosen .tree-drag-handle{opacity:1}
+.tree-drag-handle:active{cursor:grabbing}
+.tree-drag-handle:hover{color:var(--primary)}
+.tree-drag-handle svg{pointer-events:none}
+.tree-node.tree-ghost{opacity:.35}
+.tree-node.tree-dragging>.tree-row{box-shadow:var(--shadow-lg);background:var(--bg-card)}
+.tree-node.tree-chosen>.tree-row{background:var(--primary-soft)}
+
+/* Khi đang kéo: hiện mọi vùng thả (kể cả nhánh đang đóng) */
+#tree.is-sorting .tree-children{display:block!important;min-height:32px;margin-top:2px}
+#tree.is-sorting .tree-children:empty{border:1px dashed var(--primary);border-radius:8px;background:var(--primary-soft);min-height:36px;position:relative}
+#tree.is-sorting .tree-children:empty::after{color:var(--primary);content:"Thả vào đây để làm danh mục con";font-size:11px;left:12px;opacity:.85;position:absolute;top:50%;transform:translateY(-50%)}
+
+.tree-slug{color:var(--t-light);font-size:10.5px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Attributes panel ──────────────────────────────────── */
+.attr-toolbar{margin-bottom:2px}
+.attr-search .input{width:100%}
+
+.attr-empty{background:var(--bg-muted);border:1px dashed var(--border);border-radius:12px;color:var(--t-muted);font-size:13px;line-height:1.65;padding:32px 20px;text-align:center}
+.attr-empty strong{color:var(--t-base);font-weight:600}
+
+.attr-table-wrap{border:1px solid var(--border-soft);border-radius:10px;overflow:hidden}
+.attr-table{margin:0}
+.attr-table thead th{background:var(--bg-muted);border-bottom:1px solid var(--border);color:var(--t-light);font-size:10.5px;font-weight:600;letter-spacing:.04em;padding:10px 14px;text-transform:uppercase;white-space:nowrap}
+.attr-table tbody td{border-bottom:1px solid var(--border-soft);padding:12px 14px;vertical-align:middle}
+.attr-table tbody tr:last-child td{border-bottom:none}
+.attr-table tbody tr{transition:background .12s ease}
+.attr-table tbody tr:hover td{background:var(--bg-hover)}
+
+.attr-td-name{color:var(--t-base);font-size:13.5px;font-weight:600;line-height:1.35}
+.attr-td-code{background:var(--bg-muted);border:1px solid var(--border-soft);border-radius:6px;color:var(--t-muted);display:inline-block;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:500;padding:3px 8px}
+.attr-td-count{width:88px}
+.attr-count-badge{align-items:center;background:var(--info-soft);border-radius:999px;color:var(--info);display:inline-flex;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;justify-content:center;min-width:26px;padding:3px 9px}
+.attr-td-preview{min-width:160px;max-width:280px}
+.attr-td-actions{text-align:right;width:72px}
+
+.attr-preview-chips{align-items:center;display:flex;flex-wrap:wrap;gap:5px}
+.attr-preview-empty{color:var(--t-light);font-size:12px;font-style:italic}
+.attr-val-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;color:var(--t-base);display:inline-flex;font-size:11.5px;font-weight:500;line-height:1.2;padding:4px 9px;white-space:nowrap}
+.attr-more-chip{align-items:center;background:transparent;border:1px dashed color-mix(in oklab,var(--primary) 45%,var(--border));border-radius:6px;color:var(--primary);cursor:default;display:inline-flex;font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:700;gap:2px;line-height:1.2;padding:3px 7px;white-space:nowrap}
+.attr-more-chip:hover{background:var(--primary-soft);border-style:solid}
+
+.attr-row-actions{align-items:center;display:inline-flex;gap:2px;justify-content:flex-end;opacity:.55;transition:opacity .12s ease}
+.attr-table tbody tr:hover .attr-row-actions{opacity:1}
+.attr-row-actions .btn--icon{color:var(--t-muted);padding:5px}
+.attr-row-actions .btn--icon svg{height:15px;width:15px}
+.attr-row-actions .btn--icon:hover{background:var(--bg-muted);color:var(--t-base)}
+.attr-row-actions .attr-del:hover{background:var(--danger-soft);color:var(--danger)}
+
+.is-hidden{display:none!important}
+
+/* Select2 — empty state: placeholder căn giữa dọc, trái ngang */
+#attr-modal .select2-container--default .select2-selection--multiple .select2-selection__placeholder{display:none!important}
+#attr-modal .select2-container--default .select2-selection--multiple:not(:has(.select2-selection__choice)) .select2-selection__rendered{flex-wrap:nowrap;align-items:center;padding:0 9px;min-height:42px}
+#attr-modal .select2-container--default .select2-selection--multiple:not(:has(.select2-selection__choice)) .select2-search--inline{flex:1 1 100%;width:100%;min-width:0;margin:0}
+#attr-modal .select2-container--default .select2-selection--multiple:not(:has(.select2-selection__choice)) .select2-search__field{width:100%!important;height:42px;line-height:42px;margin:0!important;padding:0 2px;text-align:left}
+
+.ac-modal-backdrop[hidden]{display:none!important}
+.ac-modal-backdrop.show{display:flex!important}

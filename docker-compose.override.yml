@@ -10,6 +10,8 @@ services:
     image: app:dev
     volumes:
       - .:/var/www/html 
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
     environment:
       - APP_DEBUG=true
 
@@ -26,6 +28,23 @@ services:
       - PMA_PASSWORD=${PMA_PASSWORD}
     depends_on: 
       mysql:
-        condition: service_healthy 
+        condition: service_started 
     networks:
       - ntbook_network 
+
+  node:
+    image: node:22-alpine
+    container_name: ntbook_node
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - node_modules_data:/var/www/html/node_modules
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "5173:5173"   # Vite
+    networks:
+      - ntbook_network
+  
+volumes:
+  vendor_data:
+  node_modules_data:
