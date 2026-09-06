@@ -1,0 +1,23 @@
+/* Dashboard — bespoke, dependency-free visualisations (CSS/SVG only). */
+
+/* ---- Animated bar chart ---- */
+.bar-chart{align-items:flex-end;display:flex;gap:6px;height:220px;padding:8px 0 0}
+.bar-col{align-items:center;display:flex;flex:1;flex-direction:column;gap:8px;height:100%;justify-content:flex-end;min-width:0;position:relative}
+.bar-col .bar{background:linear-gradient(180deg,var(--primary-light),var(--primary));border-radius:6px 6px 3px 3px;min-height:4px;position:relative;transform:scaleY(0);transform-origin:bottom;transition:transform .7s cubic-bezier(.2,.7,.2,1),filter .16s;width:100%}
+.bar-col:hover .bar{filter:brightness(1.08)}
+.bar-col.is-in .bar{transform:scaleY(1)}
+.bar-col .bar:after{background:var(--t-base);border-radius:6px;bottom:calc(100% + 8px);color:var(--bg-card);content:attr(data-val);font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:600;left:50%;opacity:0;padding:4px 7px;pointer-events:none;position:absolute;transform:translateX(-50%) translateY(4px);transition:opacity .16s,transform .16s;white-space:nowrap;z-index:2}
+.bar-col:hover .bar:after{opacity:1;transform:translateX(-50%) translateY(0)}
+.bar-col .lbl{color:var(--t-light);font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.02em;white-space:nowrap}
+
+/* ---- Donut (conic-gradient) ---- */
+.donut-wrap{display:grid;place-items:center;padding:10px 0 16px}
+.donut{border-radius:50%;height:170px;position:relative;width:170px;transition:background .6s ease}
+.donut-hole{align-items:center;background:var(--bg-card);border-radius:50%;display:flex;flex-direction:column;height:118px;justify-content:center;left:50%;position:absolute;top:50%;transform:translate(-50%,-50%);width:118px}
+.donut-hole .pct{color:var(--t-base);font-family:"Inter Tight",sans-serif;font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.donut-hole .lbl{color:var(--t-muted);font-size:11.5px;margin-top:2px}
+.legend-list{display:flex;flex-direction:column;gap:2px}
+.legend-row{align-items:center;display:flex;gap:10px;padding:7px 0}
+.legend-row .sw{border-radius:3px;flex-shrink:0;height:11px;width:11px}
+.legend-row .name{color:var(--t-muted);flex:1;font-size:12.5px}
+.legend-row .val{color:var(--t-base);font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:600}

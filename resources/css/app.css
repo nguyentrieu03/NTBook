@@ -1,9 +1,61 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+/* ── Auth session status (success flash) ────────────────── */
+.auth-session-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--success-soft);
+    border: 1px solid color-mix(in oklab, var(--success) 25%, transparent);
+    color: var(--success);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.auth-session-status svg {
+    flex-shrink: 0;
+}
+
+.auth-session-status--success {
+    background: var(--success-soft);
+    border: 1px solid color-mix(in oklab, var(--success) 25%, transparent);
+    color: var(--success);
+}
+
+.auth-session-status--error {
+    background: var(--danger-soft);
+    border: 1px solid color-mix(in oklab, var(--danger) 25%, transparent);
+    color: var(--danger);
+}
+
+/* ── Field validation errors ─────────────────────────────── */
+ul.field-errors {
+    list-style: none !important;
+    margin: 6px 0 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+.field-error-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    color: #ef4444 !important;
+    line-height: 1.4 !important;
+}
+
+.field-error-icon {
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    color: #ef4444 !important;
 }

@@ -1,0 +1,80 @@
+/* Products list — screen-specific styles. */
+
+/* ── Existing table-view chips ─────────────────────────── */
+.var-count{align-items:center;background:var(--info-soft);border-radius:999px;color:var(--info);display:inline-flex;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;gap:5px;padding:3px 9px}
+.acc-count{align-items:center;color:var(--t-muted);display:inline-flex;font-size:12px;gap:5px}
+.acc-count svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8}
+.unmapped-flag{align-items:center;background:var(--warning-soft);border-radius:999px;color:var(--warning);display:inline-flex;font-size:10.5px;font-weight:700;gap:4px;padding:2px 8px}
+
+/* ── View toggle toolbar ───────────────────────────────── */
+.view-toolbar{display:flex;align-items:center;justify-content:flex-end;margin-bottom:14px}
+.view-toggle{background:var(--bg-muted);border-radius:8px;display:flex;gap:2px;padding:3px}
+.view-btn{align-items:center;background:none;border:none;border-radius:6px;color:var(--t-muted);cursor:pointer;display:inline-flex;padding:5px 9px;transition:background .12s,color .12s}
+.view-btn svg{height:16px;width:16px}
+.view-btn.is-active{background:var(--bg-card);box-shadow:0 1px 3px rgba(0,0,0,.08);color:var(--primary)}
+.view-btn:hover:not(.is-active){color:var(--t-base)}
+
+/* ── Product grid ──────────────────────────────────────── */
+.prod-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:1280px){.prod-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:768px) {.prod-grid{grid-template-columns:repeat(2,1fr)}}
+
+.prod-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.prod-card:hover{border-color:var(--primary-light);box-shadow:0 4px 14px rgba(37,99,235,.1)}
+.prod-card-img{align-items:center;aspect-ratio:1;background:var(--bg-muted);color:var(--t-light);display:flex;justify-content:center;overflow:hidden;position:relative}
+.prod-card-img svg{height:44px;width:44px}
+.prod-card-actions{display:flex;gap:2px;opacity:0;position:absolute;right:6px;top:6px;transition:opacity .15s;z-index:2}
+.prod-card:hover .prod-card-actions{opacity:1}
+@media(hover:none){.prod-card-actions{opacity:1}}
+
+.card-act-btn{align-items:center;background:color-mix(in oklab,var(--bg-card) 90%,transparent);backdrop-filter:blur(4px);border:none;border-radius:5px;color:var(--t-light);cursor:pointer;display:inline-flex;padding:3px;text-decoration:none;transition:background .1s,color .1s}
+.card-act-btn svg{height:12px;width:12px;fill:none;stroke:currentColor;stroke-width:2}
+.card-act-btn:hover{background:var(--primary-soft);color:var(--primary)}
+.card-act-btn--danger:hover{background:var(--danger-soft);color:var(--danger)}
+@media(max-width:1024px){
+  .prod-card-actions{gap:4px;right:5px;top:5px}
+  .card-act-btn{border-radius:6px;min-height:32px;min-width:32px;padding:6px;justify-content:center}
+  .card-act-btn svg{height:15px;width:15px}
+}
+
+/* Cover image (over icon fallback) — shared by grid, table, modal */
+.cover-img{inset:0;object-fit:cover;position:absolute;width:100%;height:100%;z-index:1}
+.cell-thumb .thumb{position:relative}
+.sku-card-img{position:relative}
+.prod-card-body{padding:10px 12px}
+.prod-card-name{color:var(--t-base);display:-webkit-box;font-size:12.5px;font-weight:500;line-height:1.45;margin:0 0 8px;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.prod-card-meta{align-items:center;display:flex;gap:6px;justify-content:space-between}
+.prod-card-spu{align-items:center;display:flex;flex:1;gap:3px;min-width:0}
+.prod-card-spu .mono{color:var(--t-muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Grid empty state ──────────────────────────────────── */
+.grid-empty{color:var(--t-muted);padding:40px;text-align:center}
+
+/* ── Copy button (shared: grid cards + variant modal) ──── */
+.copy-btn{align-items:center;background:none;border:none;border-radius:4px;color:var(--t-light);cursor:pointer;display:inline-flex;flex-shrink:0;padding:2px 3px;transition:background .1s,color .1s}
+.copy-btn:hover{background:var(--primary-soft);color:var(--primary)}
+.copy-btn svg{height:12px;width:12px}
+
+/* ── Table row clickable hint ──────────────────────────── */
+#tbl tbody tr{cursor:pointer}
+#tbl tbody tr:hover td{background:var(--bg-hover)}
+
+/* ── Category Select2 integration ─────────────────────── */
+.cat-tree-item{align-items:baseline;display:inline-flex;gap:1px}
+.cat-tree-prefix{color:var(--t-light);font-family:"JetBrains Mono",monospace;font-size:11px;white-space:pre}
+
+/* ── SKU variant modal ─────────────────────────────────── */
+.sku-modal-meta{align-items:center;display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.sku-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:600px){.sku-grid{grid-template-columns:repeat(2,1fr)}}
+
+.sku-card{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sku-card-img{align-items:center;aspect-ratio:1;background:var(--bg-muted);color:var(--t-light);display:flex;justify-content:center}
+.sku-card-img svg{height:32px;width:32px}
+.sku-card-body{padding:8px 10px}
+.sku-card-code{align-items:center;display:flex;font-family:"JetBrains Mono",monospace;font-size:10.5px;gap:4px;margin-bottom:6px;min-width:0;color:var(--t-muted)}
+.sku-card-code span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.sku-card-attrs{display:flex;flex-wrap:wrap;gap:4px}
+.attr-chip{border-radius:4px;display:inline-flex;font-size:10px;overflow:hidden}
+.attr-chip-name{background:var(--bg-muted);border-right:1px solid var(--border);color:var(--t-muted);padding:2px 5px}
+.attr-chip-val{background:var(--primary-soft);color:var(--primary);font-weight:600;padding:2px 6px}

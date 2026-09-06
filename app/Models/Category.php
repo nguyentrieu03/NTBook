@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Product;
+
+class Category extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = ['name', 'slug', 'sort_order', 'parent_id', 'is_active'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function parent() {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children() {
+        return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function products() {
+        return $this->hasMany(Product::class);
+    }
+}
