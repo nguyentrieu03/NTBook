@@ -68,3 +68,8 @@
 
 .ac-modal-backdrop[hidden]{display:none!important}
 .ac-modal-backdrop.show{display:flex!important}
+
+.modal-form-errors{background:var(--danger-soft);border:1px solid color-mix(in oklab,var(--danger) 28%,transparent);border-radius:10px;color:var(--danger);font-size:13px;line-height:1.5;padding:10px 14px}
+.modal-form-errors strong{font-weight:600}
+#cat-form .input.is-invalid,#attr-form .input.is-invalid{border-color:var(--danger);box-shadow:0 0 0 3px color-mix(in oklab,var(--danger) 18%,transparent)}
+#attr-form .am-vals-s2wrap.is-invalid .select2-container--default .select2-selection--multiple{border-color:var(--danger);box-shadow:0 0 0 3px color-mix(in oklab,var(--danger) 18%,transparent)}

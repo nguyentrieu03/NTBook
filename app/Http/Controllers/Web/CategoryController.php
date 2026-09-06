@@ -7,17 +7,22 @@ use App\Models\Attribute;
 use App\Models\Category;
 use App\Support\Categories\CategoryTreeBuilder;
 use Illuminate\Http\JsonResponse;
+use App\Domains\Category\Contracts\CategoryServiceInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use App\Domains\Category\DTOs\CategoryFilterDTO;
 
 class CategoryController extends Controller
 {
-    public function index(): View
+    public function __construct(
+        private readonly CategoryServiceInterface $categoryService
+    ) {}
+
+    public function index(Request $request): View
     {
-        $categoryTree = CategoryTreeBuilder::build();
+        $categoryTree = $this->categoryService->build();
         $attributes = Attribute::query()
             ->with(['attributeValues' => fn ($q) => $q->where('is_active', true)->orderBy('id')])
             ->where('is_active', true)

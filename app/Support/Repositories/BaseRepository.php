@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
-    abstract protected function model(): Model;
+    /** @return class-string<Model> */
+    abstract protected function model(): string;
 
     protected function query(): Builder 
     {

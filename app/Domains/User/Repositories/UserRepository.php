@@ -6,12 +6,11 @@ use App\Domains\User\Contracts\UserRepositoryInterface;
 use App\Domains\User\DTOs\{CreateUserDTO, UpdateUserDTO, UserFilterDTO};
 use App\Models\User;
 use App\Support\Repositories\BaseRepository;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    protected function model(): Model
+    protected function model(): string
     {
         return User::class;
     }
@@ -40,11 +39,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return $query
             ->orderBy($filter->sortBy, $filter->sortDir)
             ->paginate($filter->perPage);
-    }
-
-    public function findById(int $id): ?User
-    {
-        return $this->query()->find($id);
     }
 
     public function existsByEmail(string $email, ?int $excludeId = null): bool

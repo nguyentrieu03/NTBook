@@ -43,7 +43,8 @@ export default defineConfig({
         // nên phải poll thì Vite mới thấy file thay đổi (HMR/rebuild mới chạy).
         watch: {
             usePolling: true,
-            interval: 300,
+            interval: 100,
+            ignored: ['**/vendor/**', '**/storage/**', '**/public/build/**'],
         },
     },
 });

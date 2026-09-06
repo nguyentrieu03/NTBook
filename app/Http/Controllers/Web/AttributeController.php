@@ -80,13 +80,13 @@ class AttributeController extends Controller
         $lines = collect($items)
             ->map(fn ($v) => trim((string) $v))
             ->filter()
-            ->unique(fn ($v) => Str::lower($v))
+            ->unique(fn ($v) => $this->normalizeAttributeValue($v))
             ->values();
 
         $keepIds = [];
 
         foreach ($lines as $value) {
-            $normalized = Str::lower($value);
+            $normalized = $this->normalizeAttributeValue($value);
             $existing = $attribute->attributeValues()
                 ->where('normalized_value', $normalized)
                 ->first();
@@ -109,5 +109,11 @@ class AttributeController extends Controller
         $attribute->attributeValues()
             ->when($keepIds !== [], fn ($q) => $q->whereNotIn('id', $keepIds))
             ->update(['is_active' => false]);
+    }
+
+    /** Bỏ dấu tiếng Việt + lowercase — dùng cho dedup (VD: "Vàng" → "vang"). */
+    private function normalizeAttributeValue(string $value): string
+    {
+        return Str::lower(Str::ascii($value));
     }
 }

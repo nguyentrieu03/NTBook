@@ -12,6 +12,10 @@ class Category extends Model
 
     protected $fillable = ['name', 'slug', 'sort_order', 'parent_id', 'is_active'];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public function parent() {
         return $this->belongsTo(Category::class, 'parent_id');
     }

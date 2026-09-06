@@ -153,11 +153,45 @@
     setTimeout(function () { $el.attr("hidden", "hidden"); }, 220);
   }
 
+  function clearFormErrors($form) {
+    $form.find(".modal-form-errors").remove();
+    $form.find(".field-errors").remove();
+    $form.find(".is-invalid").removeClass("is-invalid");
+  }
+
+  function focusFirstInvalid($form) {
+    var $target = $form.find(".is-invalid").first();
+    if (!$target.length) {
+      $target = $form.find(".field-errors").first().closest(".field").find("input, select, textarea").first();
+    }
+    if ($target.length) {
+      setTimeout(function () { $target.trigger("focus"); }, 80);
+      return;
+    }
+    setTimeout(function () { $form.find("input:visible").first().trigger("focus"); }, 80);
+  }
+
+  function bindFormErrorClear($form) {
+    $form.on("input change", "input, select, textarea", function () {
+      var $field = $(this).closest(".field");
+      $field.find(".field-errors").remove();
+      $(this).removeClass("is-invalid");
+      $field.find(".is-invalid").removeClass("is-invalid");
+      if (!$form.find(".field-errors").length) {
+        $form.find(".modal-form-errors").remove();
+      }
+    });
+  }
+
   function openCatModal(opts) {
     opts = opts || {};
     var $modal = $("#cat-modal");
     var $form = $("#cat-form");
     var isEdit = !!opts.editId;
+
+    if (!opts.keepErrors) {
+      clearFormErrors($form);
+    }
 
     slugTouched = !!opts.slug;
     $("#cat-modal-title").text(opts.title || (isEdit ? "Sửa danh mục" : "Thêm danh mục"));
@@ -182,7 +216,11 @@
       : cfg.storeUrl);
 
     openBackdrop($modal);
-    setTimeout(function () { $("#cat-name").trigger("focus"); }, 80);
+    if (opts.keepErrors) {
+      focusFirstInvalid($form);
+    } else {
+      setTimeout(function () { $("#cat-name").trigger("focus"); }, 80);
+    }
   }
 
   function toValueArray(values) {
@@ -229,6 +267,10 @@
     var $form = $("#attr-form");
     var isEdit = !!opts.id;
 
+    if (!opts.keepErrors) {
+      clearFormErrors($form);
+    }
+
     codeTouched = !!opts.code;
     $("#attr-modal-title").text(isEdit ? "Sửa thuộc tính" : "Tạo thuộc tính mới");
     $("#attr-modal-submit").text(isEdit ? "Lưu" : "Tạo thuộc tính");
@@ -241,7 +283,11 @@
     initAttrValuesSelect(opts.values);
 
     openBackdrop($modal);
-    setTimeout(function () { $("#attr-name").trigger("focus"); }, 80);
+    if (opts.keepErrors) {
+      focusFirstInvalid($form);
+    } else {
+      setTimeout(function () { $("#attr-name").trigger("focus"); }, 80);
+    }
   }
 
   function filterAttrs() {
@@ -258,6 +304,8 @@
   $(function () {
     initTreeSortable();
     refreshLeafStates();
+    bindFormErrorClear($("#cat-form"));
+    bindFormErrorClear($("#attr-form"));
 
     $("#tree").on("click", ".tree-toggle:not(.leaf)", function (e) {
       e.stopPropagation();
@@ -367,6 +415,7 @@
         slug: cfg.old && cfg.old.slug,
         parentId: cfg.old && cfg.old.parentId,
         parentName: cfg.old && cfg.old.parentName,
+        keepErrors: true,
       });
     } else if (cfg.openModal === "attribute") {
       openAttrModal({
@@ -374,6 +423,7 @@
         name: cfg.old && cfg.old.name,
         code: cfg.old && cfg.old.code,
         values: cfg.old && cfg.old.values,
+        keepErrors: true,
       });
     }
   });
