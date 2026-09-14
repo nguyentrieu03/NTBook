@@ -9,10 +9,11 @@ use Illuminate\Support\Collection;
 
 interface CategoryServiceInterface
 {
-    public function getList(CategoryFilterDTO $filter): LengthAwarePaginator;
+    public function getList(CategoryFilterDTO $filter): LengthAwarePaginator|Collection;
     public function build(): Collection;
     public function findOrFail(int $id): Category;
     public function create(CreateCategoryDTO $dto): Category;
     public function update(int $id, UpdateCategoryDTO $dto): Category;
     public function delete(int $id): void;
+    public function reorder(array $nodes): void;
 }

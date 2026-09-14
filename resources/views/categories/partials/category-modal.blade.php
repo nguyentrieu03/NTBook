@@ -14,6 +14,11 @@
             <input type="hidden" name="parent_id" id="cat-parent-id" value="">
             <input type="hidden" name="parent_name" id="cat-parent-name-hidden" value="">
             <div class="modal-body stack g12">
+                @if (old('form') === 'category' && session('error'))
+                    <div class="modal-form-errors" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 @if (old('form') === 'category' && $errors->any())
                     <div class="modal-form-errors" role="alert">
                         <strong>Không lưu được. Vui lòng kiểm tra các trường bên dưới.</strong>
@@ -30,7 +35,7 @@
                     @endif
                 </div>
                 <div class="field">
-                    <label class="field-label" for="cat-slug">Slug (URL) <span class="req">*</span></label>
+                    <label class="field-label" for="cat-slug">Slug (URL)</label>
                     <input class="input mono @if(old('form') === 'category' && $errors->has('slug')) is-invalid @endif" id="cat-slug" name="slug" type="text" placeholder="ao-bong-da" value="{{ old('form') === 'category' ? old('slug') : '' }}">
                     @if (old('form') === 'category')
                         <x-input-error :messages="$errors->get('slug')" />

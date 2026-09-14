@@ -17,6 +17,11 @@
             <input type="hidden" name="form" value="attribute">
             <input type="hidden" name="entity_id" id="attr-entity-id" value="">
             <div class="modal-body stack g12">
+                @if (old('form') === 'attribute' && session('error'))
+                    <div class="modal-form-errors" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 @if (old('form') === 'attribute' && $errors->any())
                     <div class="modal-form-errors" role="alert">
                         <strong>Không lưu được. Vui lòng kiểm tra các trường bên dưới.</strong>

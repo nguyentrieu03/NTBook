@@ -35,6 +35,8 @@
     return String(text || "")
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9]+/g, "-")
@@ -116,6 +118,14 @@
           var tree = buildTreeFromDom($("#tree"));
           if (!cfg.reorderUrl) return;
 
+          function revertDrag() {
+            var item = evt.item;
+            var from = evt.from;
+            var ref = from.children[evt.oldIndex] || null;
+            from.insertBefore(item, ref);
+            refreshLeafStates();
+          }
+
           fetch(cfg.reorderUrl, {
             method: "POST",
             headers: {
@@ -133,6 +143,7 @@
               if (window.AC && window.AC.toast) window.AC.toast("Đã cập nhật vị trí danh mục.", "info");
             })
             .catch(function () {
+              revertDrag();
               if (window.AC && window.AC.toast) window.AC.toast("Không lưu được thứ tự danh mục.", "danger");
             });
         },
