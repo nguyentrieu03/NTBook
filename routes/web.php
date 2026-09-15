@@ -27,6 +27,6 @@ Route::prefix('/admin')->name('admin.')->middleware('auth')->group(function () {
     });
 
     Route::post('categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
-    Route::resource('categories', CategoryController::class)->except(['show']);
+    Route::resource('categories', CategoryController::class)->except(['show', 'create', 'edit']);
     Route::resource('attributes', AttributeController::class)->only(['store', 'update', 'destroy']);
 });

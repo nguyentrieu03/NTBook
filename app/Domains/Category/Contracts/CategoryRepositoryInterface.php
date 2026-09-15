@@ -17,4 +17,11 @@ interface CategoryRepositoryInterface extends BaseRepositoryInterface
     public function update(Category $category, UpdateCategoryDTO $dto): Category;
 
     public function delete(Category $category): void;
+
+    public function existsBySlug(string $slug, ?int $ignoreId = null): bool;
+    public function maxSortOrder(?int $parentId): ?int;
+    public function countByIds(array $ids): int;
+    public function updatePosition(int $id, ?int $parentId, int $sortOrder, int $level): int;
+    public function hasChildren(Category $category): bool;
+    public function hasProducts(Category $category): bool;
 }

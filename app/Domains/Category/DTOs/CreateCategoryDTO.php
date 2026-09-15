@@ -6,23 +6,22 @@ final class CreateCategoryDTO
 {
     public function __construct(
         public readonly string $name,
-        public readonly string $slug,
         public readonly ?int $level = 0,
-        public readonly ?int $sortOrder = 0,
-        public readonly ?int $isActive = 1,
+        public readonly bool $isActive = true,
         public readonly ?int $parentId = null,
+        public readonly ?string $slug = null,
+        public readonly ?int $sortOrder = 0,
     ){}
 
-    // Tạo DTO từ dữ liệu đã validate của Form Request
     public static function fromRequest(array $data): self 
     {
         return new self(
             name: $data['name'],
-            slug: $data['slug'],
             level: $data['level'] ?? 0,
-            sortOrder: $data['sortOrder'] ?? 0,
-            isActive: $data['isActive'] ?? 1,
-            parentId: $data['parentId'] ?? null,
+            isActive: (bool) ($data['is_active'] ?? true),
+            parentId: $data['parent_id'] ?? null,
+            slug: $data['slug'] ?? null,
+            sortOrder: $data['sort_order'] ?? 0,
         );
     }
 }

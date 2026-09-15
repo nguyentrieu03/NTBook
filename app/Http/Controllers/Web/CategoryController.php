@@ -3,85 +3,57 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attribute;
 use App\Models\Category;
-use App\Support\Categories\CategoryTreeBuilder;
 use Illuminate\Http\JsonResponse;
 use App\Domains\Category\Contracts\CategoryServiceInterface;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
-use App\Domains\Category\DTOs\CategoryFilterDTO;
+use App\Domains\Attribute\Contracts\AttributeServiceInterface;
+use App\Domains\Attribute\DTOs\AttributeFilterDTO;
+use App\Domains\Category\DTOs\CreateCategoryDTO;
+use App\Http\Requests\Category\CreateCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Domains\Category\DTOs\UpdateCategoryDTO;
+use App\Http\Requests\Category\ReorderCategoryRequest;
 
 class CategoryController extends Controller
 {
     public function __construct(
-        private readonly CategoryServiceInterface $categoryService
+        private readonly CategoryServiceInterface $categoryService,
+        private readonly AttributeServiceInterface $attributeService
     ) {}
 
-    public function index(Request $request): View
+    public function index(): View
     {
         $categoryTree = $this->categoryService->build();
-        $attributes = Attribute::query()
-            ->with(['attributeValues' => fn ($q) => $q->where('is_active', true)->orderBy('id')])
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        $attributes = $this->attributeService->getList(AttributeFilterDTO::fromRequest([
+            'paginate' => false,
+            'relations' => [
+                'attributeValues' => [
+                    'where'=> [
+                        ['is_active', '=', true],
+                    ],
+                    'sort' => ['id' => 'desc'],
+                ]
+            ]
+        ]));
 
         return view('categories.index', compact('categoryTree', 'attributes'));
     }
 
-    public function create(): RedirectResponse
+    public function store(CreateCategoryRequest $request): RedirectResponse
     {
-        return redirect()->route('admin.categories.index');
-    }
-
-    public function edit(Category $category): RedirectResponse
-    {
-        return redirect()->route('admin.categories.index');
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'slug' => ['nullable', 'string', 'max:150'],
-            'parent_id' => ['nullable', 'integer', 'exists:categories,id'],
-        ]);
-
-        $slug = $this->resolveSlug($validated['slug'] ?: $validated['name']);
-        $parentId = $validated['parent_id'] ?? null;
-        $sortOrder = Category::query()
-            ->where('parent_id', $parentId)
-            ->max('sort_order');
-
-        Category::create([
-            'name' => $validated['name'],
-            'slug' => $slug,
-            'parent_id' => $parentId,
-            'sort_order' => ($sortOrder ?? -1) + 1,
-            'is_active' => true,
-        ]);
+        $category = $this->categoryService->create(CreateCategoryDTO::fromRequest($request->validated()));
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Đã thêm danh mục "'.$validated['name'].'".');
+            ->with('success', 'Đã thêm danh mục "'.$category->name.'".');
     }
 
-    public function update(Request $request, Category $category): RedirectResponse
+    public
+     function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:120'],
-            'slug' => ['nullable', 'string', 'max:150'],
-        ]);
-
-        $slug = $this->resolveSlug($validated['slug'] ?: $validated['name'], $category->id);
-
-        $category->update([
-            'name' => $validated['name'],
-            'slug' => $slug,
-        ]);
+        $category = $this->categoryService->update($category->id, UpdateCategoryDTO::fromRequest($request->validated()));
 
         return redirect()
             ->route('admin.categories.index')
@@ -91,66 +63,17 @@ class CategoryController extends Controller
     public function destroy(Category $category): RedirectResponse
     {
         $name = $category->name;
-        $category->delete();
+        $this->categoryService->delete($category->id);
 
         return redirect()
             ->route('admin.categories.index')
             ->with('success', 'Đã xóa danh mục "'.$name.'".');
     }
 
-    public function reorder(Request $request): JsonResponse
+    public function reorder(ReorderCategoryRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'tree' => ['required', 'array'],
-        ]);
-
-        $this->applyTreeOrder($validated['tree'], null);
+        $this->categoryService->reorder($request->validated('tree'));
 
         return response()->json(['ok' => true]);
-    }
-
-    private function resolveSlug(string $input, ?int $ignoreId = null): string
-    {
-        $base = Str::slug($input);
-        if ($base === '') {
-            $base = 'danh-muc';
-        }
-
-        $candidate = $base;
-        $suffix = 2;
-
-        while (
-            Category::query()
-                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-                ->where('slug', $candidate)
-                ->exists()
-        ) {
-            $candidate = $base.'-'.$suffix++;
-        }
-
-        return $candidate;
-    }
-
-    /**
-     * @param  array<int, array{id:int, children?:array}>  $nodes
-     */
-    private function applyTreeOrder(array $nodes, ?int $parentId): void
-    {
-        foreach ($nodes as $index => $node) {
-            if (empty($node['id'])) {
-                continue;
-            }
-
-            Category::query()
-                ->whereKey($node['id'])
-                ->update([
-                    'parent_id' => $parentId,
-                    'sort_order' => $index,
-                ]);
-
-            if (! empty($node['children']) && is_array($node['children'])) {
-                $this->applyTreeOrder($node['children'], (int) $node['id']);
-            }
-        }
     }
 }

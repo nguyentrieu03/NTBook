@@ -21,10 +21,10 @@ final class CategoryFilterDTO
         return new self(
             search: isset($data['search']) ? trim($data['search']) : null,
             isActive: (bool)($data['is_active'] ?? true),
-            sort: self::normalizeSort($data['sort'] ?? null),
+            sort: self::normalizeSort($data['sort'] ?? []),
             perPage: min((int)($data['per_page'] ?? 15), 100),
-            paginate: (bool)($data['is_paginate'] ?? true),
-            withCount: self::normalizeWithCount($data['with_count'] ?? null),
+            paginate: (bool)($data['paginate'] ?? true),
+            withCount: self::normalizeWithCount($data['with_count'] ?? []),
         );
     }
 

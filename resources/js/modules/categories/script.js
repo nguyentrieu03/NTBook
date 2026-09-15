@@ -35,6 +35,8 @@
     return String(text || "")
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9]+/g, "-")
@@ -43,6 +45,62 @@
 
   function codeSlug(text) {
     return slugify(text).replace(/-/g, "_");
+  }
+
+  /** Đồng bộ với App\Support\Text\ValueNormalizer::convertToCode() */
+  function normalizeAttributeValue(value) {
+    var result = String(value || "")
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+
+    result = result.replace(/\s+/g, "_");
+    result = result.replace(/[^a-z0-9_]/g, "");
+
+    return result;
+  }
+
+  function dedupeValuesByNormalized(values) {
+    var seen = {};
+    var out = [];
+
+    toValueArray(values).forEach(function (v) {
+      var key = normalizeAttributeValue(v);
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      out.push(v);
+    });
+
+    return out;
+  }
+
+  function hasNormalizedValue($vals, normalized) {
+    if (!normalized) return false;
+
+    var exists = false;
+    ($vals.val() || []).forEach(function (v) {
+      if (normalizeAttributeValue(v) === normalized) exists = true;
+    });
+
+    if (exists) return true;
+
+    $vals.find("option").each(function () {
+      if (normalizeAttributeValue(this.value) === normalized) exists = true;
+    });
+
+    return exists;
+  }
+
+  function toastDuplicateValue(label) {
+    if (window.AC && window.AC.toast) {
+      window.AC.toast(
+        'Giá trị "' + label + '" đã tồn tại (trùng sau khi chuẩn hóa).',
+        "info"
+      );
+    }
   }
 
   function destroySortables() {
@@ -116,6 +174,14 @@
           var tree = buildTreeFromDom($("#tree"));
           if (!cfg.reorderUrl) return;
 
+          function revertDrag() {
+            var item = evt.item;
+            var from = evt.from;
+            var ref = from.children[evt.oldIndex] || null;
+            from.insertBefore(item, ref);
+            refreshLeafStates();
+          }
+
           fetch(cfg.reorderUrl, {
             method: "POST",
             headers: {
@@ -133,6 +199,7 @@
               if (window.AC && window.AC.toast) window.AC.toast("Đã cập nhật vị trí danh mục.", "info");
             })
             .catch(function () {
+              revertDrag();
               if (window.AC && window.AC.toast) window.AC.toast("Không lưu được thứ tự danh mục.", "danger");
             });
         },
@@ -243,7 +310,7 @@
     var $vals = $("#attr-values");
     destroyAttrValuesSelect();
 
-    toValueArray(values).forEach(function (v) {
+    dedupeValuesByNormalized(values).forEach(function (v) {
       $vals.append(new Option(v, v, true, true));
     });
 
@@ -257,6 +324,40 @@
         dropdownCssClass: "am-s2-drop am-s2-drop--above",
         dropdownParent: $(".am-vals-s2wrap"),
         language: { noResults: function () { return "Nhấn Enter để thêm giá trị mới"; } },
+        createTag: function (params) {
+          var term = $.trim(params.term);
+          if (!term) return null;
+
+          var normalized = normalizeAttributeValue(term);
+          if (!normalized) return null;
+
+          if (hasNormalizedValue($vals, normalized)) {
+            toastDuplicateValue(term);
+            return null;
+          }
+
+          return { id: term, text: term, newTag: true };
+        },
+      });
+
+      $vals.off("select2:selecting.attrValues").on("select2:selecting.attrValues", function (e) {
+        var data = e.params.args.data;
+        var term = String(data.id || data.text || "").trim();
+        if (!term) return;
+
+        var normalized = normalizeAttributeValue(term);
+        var current = ($vals.val() || []).filter(function (v) {
+          return String(v) !== term;
+        });
+
+        var duplicate = current.some(function (v) {
+          return normalizeAttributeValue(v) === normalized;
+        });
+
+        if (duplicate) {
+          e.preventDefault();
+          toastDuplicateValue(term);
+        }
       });
     }
   }

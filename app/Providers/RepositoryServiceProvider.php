@@ -11,6 +11,9 @@ use App\Domains\Category\Repositories\{CategoryRepository};
 use App\Domains\Category\Services\CategoryService;
 use App\Domains\User\Services\UserService;
 use Illuminate\Support\ServiceProvider;
+use App\Domains\Attribute\Contracts\{AttributeRepositoryInterface, AttributeServiceInterface};
+use App\Domains\Attribute\Repositories\AttributeRepository;
+use App\Domains\Attribute\Services\AttributeService;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -28,6 +31,10 @@ class RepositoryServiceProvider extends ServiceProvider
         // Category domain
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(CategoryServiceInterface::class, CategoryService::class);
+
+        // Attribute domain
+        $this->app->bind(AttributeRepositoryInterface::class, AttributeRepository::class);
+        $this->app->bind(AttributeServiceInterface::class, AttributeService::class);
 
         // Auth domain
         $this->app->bind(AuthServiceInterface::class, AuthService::class);

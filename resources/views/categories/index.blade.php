@@ -23,6 +23,13 @@
     </div>
 @endif
 
+@if (session('error') && ! in_array(old('form'), ['category', 'attribute'], true))
+    <div class="alert danger" style="margin-bottom:16px">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <div class="body">{{ session('error') }}</div>
+    </div>
+@endif
+
 @if ($errors->any() && ! in_array(old('form'), ['category', 'attribute'], true))
     <div class="alert danger" style="margin-bottom:16px">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
