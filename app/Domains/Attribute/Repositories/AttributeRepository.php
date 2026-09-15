@@ -5,6 +5,7 @@ namespace App\Domains\Attribute\Repositories;
 use App\Domains\Attribute\Contracts\AttributeRepositoryInterface;
 use App\Domains\Attribute\DTOs\{CreateAttributeDTO, UpdateAttributeDTO, AttributeFilterDTO};
 use App\Models\Attribute;
+use App\Models\AttributeValue;
 use App\Support\Repositories\BaseRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -56,24 +57,79 @@ class AttributeRepository extends BaseRepository implements AttributeRepositoryI
     {
         return Attribute::create([
             'name'     => $dto->name,
-            'slug'    => $dto->slug,
-            'level' => $dto->level,
-            'sort_order' => $dto->sortOrder,
+            'code'    => $dto->code,
             'is_active' => $dto->isActive,
-            'parent_id' => $dto->parentId,
         ]);
     }
 
-    public function update(Attribute $Attribute, UpdateAttributeDTO $dto): Attribute
+    public function update(Attribute $attribute, UpdateAttributeDTO $dto): Attribute
     {
-        $Attribute->fill($dto->toArray());
-        $Attribute->save();
+        $attribute->fill($dto->toArray());
+        $attribute->save();
 
-        return $Attribute->fresh();
+        return $attribute->fresh();
     }
 
-    public function delete(Attribute $Attribute): void
+    public function delete(Attribute $attribute): void
     {
-        $Attribute->delete();
+        $attribute->delete();
+    }
+
+    public function upsertValues(int $attributeId, array $entries): void
+    {
+        if ($entries === []) {
+            return;
+        }
+
+        $now = now();
+        $rows = array_map(fn (array $entry) => [
+            'attribute_id'     => $attributeId,
+            'value'            => $entry['value'],
+            'normalized_value' => $entry['normalized_value'],
+            'is_active'        => true,
+            'deleted_at'       => null,
+            'created_at'       => $now,
+            'updated_at'       => $now,
+        ], $entries);
+
+        AttributeValue::upsert(
+            $rows,
+            ['attribute_id', 'normalized_value'],
+            ['value', 'is_active', 'deleted_at', 'updated_at'],
+        );
+    }
+
+    public function deactivateValuesExcept(int $attributeId, array $normalizedKeys): void
+    {
+        $query = AttributeValue::query()->where('attribute_id', $attributeId);
+
+        if ($normalizedKeys !== []) {
+            $query->whereNotIn('normalized_value', $normalizedKeys);
+        }
+
+        $query->update(['is_active' => false]);
+    }
+
+    public function hasProducts(Attribute $attribute): bool
+    {
+        return $attribute->products()->exists();
+    }
+
+    public function hasValuesInUse(Attribute $attribute): bool 
+    {
+        return AttributeValue::query()
+            ->where('attribute_id', $attribute->id)
+            ->where(function ($query) {
+                $query->whereHas('products')
+                    ->orWhereHas('productVariants');
+            })
+            ->exists();
+    }
+
+    public function deleteValues(Attribute $attribute): void
+    {
+        AttributeValue::query()
+            ->where('attribute_id', $attribute->id)
+            ->delete();
     }
 }

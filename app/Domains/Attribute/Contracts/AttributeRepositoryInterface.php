@@ -17,4 +17,20 @@ interface AttributeRepositoryInterface extends BaseRepositoryInterface
     public function update(Attribute $attribute, UpdateAttributeDTO $dto): Attribute;
 
     public function delete(Attribute $attribute): void;
+
+    /**
+     * @param  list<array{value: string, normalized_value: string}>  $entries
+     */
+    public function upsertValues(int $attributeId, array $entries): void;
+
+    /**
+     * @param  list<string>  $normalizedKeys
+     */
+    public function deactivateValuesExcept(int $attributeId, array $normalizedKeys): void;
+
+    public function hasProducts(Attribute $attribute): bool;
+
+    public function hasValuesInUse(Attribute $attribute): bool;
+
+    public function deleteValues(Attribute $attribute): void;
 }
